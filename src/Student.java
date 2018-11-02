@@ -1,17 +1,17 @@
-import java.util.Date;
+import java.util.List;
 
 public class Student {
 
   private int id;
   private String name;
-  private Date year;
-  private String course;
+    private String year;
+    private List<Course> course;
   private double balance;
 
   public Student() {
   }
 
-  public Student(int id, String name, Date year, String course, double balance) {
+    public Student(int id, String name, String year, List<Course> course, double balance) {
     this.id = id;
     this.name = name;
     this.year = year;
@@ -35,23 +35,27 @@ public class Student {
     this.name = name;
   }
 
-  public Date getYear() {
+    public String getYear() {
     return year;
   }
 
-  public void setYear(Date year) {
+    public void setYear(String year) {
     this.year = year;
   }
 
-  public String getCourse() {
+    public List<Course> getCourse() {
     return course;
   }
 
-  public void setCourse(String course) {
+    public void setCourse(List<Course> course) {
     this.course = course;
   }
 
   public double getBalance() {
+      this.balance = 600.00;
+      if (course.size() > 1) {
+          balance = balance + balance;
+      }
     return balance;
   }
 

@@ -9,36 +9,107 @@ public class Menu {
     private List<Student> students;
     /* List of courses that the students can be */
     private List<Course> courses;
+    /* List of courses that the students can be */
+    private List<Course> coursesStudent;
     /* We have the number of times we have to ask for the new student */
     private int cont = 0;
-    private static final String MENU_PROGRAM = "-------------------------\n"
+    private static final String MENU = "-------------------------\n"
             + "- DataBase for Students -\n"
+            + "-------------------------\n"
+            + "Are you a teacher or a student?(1-Teacher/2-Student)";
+    private static final String MENU_STUDENT = "-------------------------\n"
+            + "-------- Student --------\n"
+            + "-------------------------\n"
+            + "Which is your Id of student?";
+    private static final String MENU_TEACHER = "-------------------------\n"
+            + "-------- Teacher --------\n"
             + "-------------------------\n"
             + "How many students do you need?";
 
+    /**
+     * This is the constructor for the class
+     */
     public Menu() {
         /* We fill the List of courses */
         this.students = new ArrayList<Student>();
         this.courses = new ArrayList<Course>();
+        this.coursesStudent = new ArrayList<Course>();
         addCourses();
     }
 
     /**
      * This is the constructor
+     *
      * @param students
      * @param courses
      */
-    public Menu(List<Student> students, List<Course> courses) {
+    public Menu(List<Student> students, List<Course> courses, List<Course> coursesStudent) {
         this.students = students;
         this.courses = courses;
+        this.coursesStudent = coursesStudent;
     }
 
     /**
      * This is the menu that the user of the app will see
      */
-    public void menu() {
+    void mainMenu() {
+        String opt;
+        System.out.println(MENU);
+        opt = scanner.next();
+
+        switch (opt) {
+            case "1":
+                teacherMenu();
+                break;
+            case "2":
+                studentMenu();
+                break;
+            default:
+                System.out.println("Select a correct option!!!");
+                mainMenu();
+        }
+    }
+
+    /**
+     * Is the menu for the students
+     */
+    public void studentMenu() {
+        int identificationStudent;
+
+        if (students.size() != 0) {
+            /* Previously we show the students and their ID to know which student see */
+            for (Student s : students) {
+                System.out.println(" - ID: " + s.getId() + " - " + s.getName() + " -");
+            }
+
+            System.out.println(MENU_STUDENT);
+            identificationStudent = scanner.nextInt();
+
+            for (Student std : this.students) {
+                if (identificationStudent == std.getId()) {
+                    System.out.println("------------- ID " + std.getId() + " -------------\n" +
+                            "- Name:     " + std.getName() + "\n" +
+                            "- Year:     " + std.getYear() + "\n" +
+                            "- Balance:  " + std.getBalance() + "$");
+                    for (Course c : coursesStudent) {
+                        System.out.println("- Course/s: " + c.getLaberCourse());
+                        //System.out.println("- Course/s: " + cou.getLaberCourse());
+                    }
+                }
+                System.out.println("----------------------------------");
+            }
+        } else {
+            System.out.println("You don'y have any student, add one lazy!!");
+        }
+        mainMenu();
+    }
+
+    /**
+     * Is the menu for the teacher
+     */
+    public void teacherMenu() {
         int numberStudents = 0;
-        System.out.println(MENU_PROGRAM);
+        System.out.println(MENU_TEACHER);
         numberStudents = scanner.nextInt();
 
         while (cont != numberStudents) {
@@ -48,6 +119,8 @@ public class Menu {
             } else {
                 while (cont != numberStudents) {
                     Student std = new Student();
+                    Course c = new Course();
+                    String answer;
 
                     /* We introduce the name of the std */
                     System.out.print("Introduce the name of the student: ");
@@ -60,11 +133,28 @@ public class Menu {
                     }
                     std.setName(name);
 
+                    /* We introduce the name of the std */
+                    System.out.print("Introduce the year of the student: ");
+                    String year = scanner.next();
+
+                    while (year.isEmpty() || year.length() > 4) {
+                        if (year.isEmpty()) {
+                            System.out.println("The year can't be empty!!!");
+                            System.out.print("Introduce the year of the student: ");
+                            year = scanner.next();
+                        } else if (year.length() > 4) {
+                            System.out.println("The year can't have more than 4 characters!!!");
+                            System.out.print("Introduce the year of the student: ");
+                            year = scanner.next();
+                        }
+                    }
+                    std.setYear(year);
+
                     /* Show the courses available */
                     showCourses();
 
-                    /* We introduce the course of the std */
-                    System.out.print("Introduce the ID of course of the student: ");
+                    /* We introduce the course of the student */
+                    System.out.print("Introduce the ID of course: ");
                     String idCourse = scanner.next();
 
                     while (idCourse.isEmpty()) {
@@ -72,7 +162,46 @@ public class Menu {
                             System.out.println("The student have to be in a course!!!");
                         }
                     }
-                    std.setCourse(courses.get(Integer.parseInt(idCourse)).getLaberCourse());
+                    /**
+                     * Tengo que crear una nueva instacion de curso
+                     * a traves del ID que le pasa el profesor, pero
+                     * antes tengo que buscar el curso con ese ID y
+                     * obtener la informacion para rellenar la instacia
+                     * y asi luego anadirla a la lista de cursos del alumno
+                     */
+                    for (Course cou : this.courses) {
+                        if (String.valueOf(idCourse).equals(cou.getIdCourse())) {
+                            c = new Course(cou.getIdCourse(), cou.getLaberCourse(), cou.getPrice());
+                        }
+                    }
+                    //coursesStudent.get(Integer.parseInt(idCourse)).getLaberCourse();
+                    coursesStudent.add(c);
+                    std.setCourse((coursesStudent));
+                    System.out.println("Would you like to add another course?(y/n)");
+                    answer = scanner.next();
+
+                    while (answer.equals("y") || answer.equals("Y")) {
+                        /* We introduce the course of the student */
+                        System.out.print("Introduce the ID of course: ");
+                        idCourse = scanner.next();
+
+                        while (idCourse.isEmpty()) {
+                            if (idCourse.isEmpty()) {
+                                System.out.println("The student have to be in a course!!!");
+                            }
+                        }
+
+                        for (Course cou : this.courses) {
+                            if (String.valueOf(idCourse).equals(cou.getIdCourse())) {
+                                c = new Course(cou.getIdCourse(), cou.getLaberCourse(), cou.getPrice());
+                            }
+                        }
+                        //coursesStudent.get(Integer.parseInt(idCourse)).getLaberCourse();
+                        coursesStudent.add(c);
+                        std.setCourse((coursesStudent));
+                        System.out.println("Would you like to add another course?(y/n)");
+                        answer = scanner.next();
+                    }
 
                     /* We get the id the of the course and we can get of the label the level of the course
                      * xxxx 101 --> we get the 101 from the label that is the digit that we need for the
@@ -84,20 +213,15 @@ public class Menu {
                     String val = createIdStudent(aux);
                     std.setId(Integer.parseInt(val));
 
-
-
                     /* We add the std to the List */
                     students.add(std);
 
                     /* We increment the cont to ask the number of the students only */
                     cont++;
-
-                    System.out.println("size " + students.size());
-
-                    /* OPTION FOR THE STUDENT TO SEE ITS BALANCE */
                 }
             }
         }
+        mainMenu();
     }
 
     /**
@@ -115,9 +239,11 @@ public class Menu {
      * Show all the courses that the student can have
      */
     public void showCourses() {
+        System.out.println("------- LIST OF COURSES -------");
         for (Course cou : this.courses) {
             System.out.println(cou.getIdCourse() + " " + cou.getLaberCourse() + " " + cou.getPrice() + "$");
         }
+        System.out.println("-------------------------------");
     }
 
     /**
