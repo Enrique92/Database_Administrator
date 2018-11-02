@@ -60,6 +60,7 @@ public class Menu {
         switch (opt) {
             case "1":
                 teacherMenu();
+              mainMenu();
                 break;
             case "2":
                 studentMenu();
@@ -107,15 +108,16 @@ public class Menu {
     /**
      * Is the menu for the teacher
      */
-    public void teacherMenu() {
+    public boolean teacherMenu() {
         int numberStudents = 0;
         System.out.println(MENU_TEACHER);
         numberStudents = scanner.nextInt();
 
-        while (cont != numberStudents) {
+      while (true) {
             if (numberStudents == 0) {
                 System.out.println("You need to have at least one student!!!");
                 numberStudents = scanner.nextInt();
+              return false;
             } else {
                 while (cont != numberStudents) {
                     Student std = new Student();
@@ -157,26 +159,26 @@ public class Menu {
                     System.out.print("Introduce the ID of course: ");
                     String idCourse = scanner.next();
 
-                    while (idCourse.isEmpty()) {
+                  while (idCourse.isEmpty() || Integer.parseInt(idCourse) > 4) {
                         if (idCourse.isEmpty()) {
                             System.out.println("The student have to be in a course!!!");
+                        } else if (Integer.parseInt(idCourse) > 4) {
+                          System.out.println("The course don't exist!!!");
+                          System.out.print("Introduce the ID of course: ");
+                          idCourse = scanner.next();
                         }
                     }
-                    /**
-                     * Tengo que crear una nueva instacion de curso
-                     * a traves del ID que le pasa el profesor, pero
-                     * antes tengo que buscar el curso con ese ID y
-                     * obtener la informacion para rellenar la instacia
-                     * y asi luego anadirla a la lista de cursos del alumno
-                     */
-                    for (Course cou : this.courses) {
-                        if (String.valueOf(idCourse).equals(cou.getIdCourse())) {
+
+                  for (Course cou : this.courses) {
+                    if (Integer.parseInt(idCourse) == cou.getIdCourse()) {
                             c = new Course(cou.getIdCourse(), cou.getLaberCourse(), cou.getPrice());
                         }
                     }
-                    //coursesStudent.get(Integer.parseInt(idCourse)).getLaberCourse();
+
+                    /* We add the course for the student */
                     coursesStudent.add(c);
-                    std.setCourse((coursesStudent));
+
+                    /* We ask if the teacher want to introduce another course */
                     System.out.println("Would you like to add another course?(y/n)");
                     answer = scanner.next();
 
@@ -192,13 +194,15 @@ public class Menu {
                         }
 
                         for (Course cou : this.courses) {
-                            if (String.valueOf(idCourse).equals(cou.getIdCourse())) {
+                          if (Integer.parseInt(idCourse) == cou.getIdCourse()) {
                                 c = new Course(cou.getIdCourse(), cou.getLaberCourse(), cou.getPrice());
                             }
                         }
-                        //coursesStudent.get(Integer.parseInt(idCourse)).getLaberCourse();
+
+                        /* We add the course for the student */
                         coursesStudent.add(c);
-                        std.setCourse((coursesStudent));
+
+                        /* We ask if the teacher want to introduce another course */
                         System.out.println("Would you like to add another course?(y/n)");
                         answer = scanner.next();
                     }
@@ -215,24 +219,22 @@ public class Menu {
 
                     /* We add the std to the List */
                     students.add(std);
-
-                    /* We increment the cont to ask the number of the students only */
-                    cont++;
+                  return true;
                 }
+              return true;
             }
         }
-        mainMenu();
     }
 
     /**
      * We are going to add here all the courses that the student can have
      */
     public void addCourses() {
-        courses.add(new Course(0, "History          101", 600.00));
-        courses.add(new Course(1, "Mathematics      101", 600.00));
-        courses.add(new Course(2, "English          101", 600.00));
-        courses.add(new Course(3, "Chemistry        101", 600.00));
-        courses.add(new Course(4, "Computer Science 101", 600.00));
+      courses.add(new Course(1, "History          101", 600.00));
+      courses.add(new Course(2, "Mathematics      101", 600.00));
+      courses.add(new Course(3, "English          101", 600.00));
+      courses.add(new Course(4, "Chemistry        101", 600.00));
+      courses.add(new Course(5, "Computer Science 101", 600.00));
     }
 
     /**
